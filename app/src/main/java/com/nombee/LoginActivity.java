@@ -33,6 +33,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,16 +63,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final int REQUEST_READ_CONTACTS = 0;
 
     /**
+     * Server URL, App Name
+     */
+    //private static final String SERVER_URL = "http://nombee-app.appspot.com/";
+    private static final String SERVER_URL = "http://1-dot-erikotestserver2.appspot.com/";
+    private static final String SERVER_APP = "testservletapp";
+
+    /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+    //private static final String[] DUMMY_CREDENTIALS = new String[]{
+    //        "foo@example.com:hello", "bar@example.com:world"
+    //};
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private AsyncLoginRequest loginTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -82,6 +95,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         //FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -102,13 +116,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                //attemptLogin();
-                onClickSignInButton();
+                attemptLogin();
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        Object[] arg = new String[]{SERVER_APP, SERVER_URL, "eriko"};
+        //atask.execute(arg);
 
         // start Facebook Login
 /**
@@ -152,11 +168,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         getLoaderManager().initLoader(0, null, this);
     }
 
-    public void onClickSignInButton() {
-        Intent intent = new Intent(getApplicationContext(), TopActivity.class);
-        startActivity(intent);
-
-    }
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -199,7 +210,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
+        if (loginTask != null) {
             return;
         }
 
@@ -240,8 +251,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            loginTask = new AsyncLoginRequest(this, email, password);
+            loginTask.execute((Void) null);
         }
     }
 
@@ -369,7 +380,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } catch (InterruptedException e) {
                 return false;
             }
-
+/*
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
                 if (pieces[0].equals(mEmail)) {
@@ -377,6 +388,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     return pieces[1].equals(mPassword);
                 }
             }
+            */
 
             // TODO: register the new account here.
             return true;
@@ -384,7 +396,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
+            loginTask = null;
             showProgress(false);
 
             if (success) {
@@ -397,7 +409,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected void onCancelled() {
-            mAuthTask = null;
+            loginTask = null;
             showProgress(false);
         }
     }
