@@ -34,7 +34,9 @@
                     android:layout_height="25dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginStart="5dp"
-                    android:src="@drawable/sampleneko" />
+                    />
+                  <!--  android:src="@drawable/sampleneko" -->
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -50,7 +52,7 @@
 
             <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="185"
+                android:layout_height="185dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -59,8 +61,9 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:id="@+id/imageView"
-                    android:src="@drawable/samplepic"
                     android:contentDescription="posted picture" />
+               <!--     android:src="@drawable/samplepic" -->
+
 
                 <LinearLayout
                     android:layout_width="fill_parent"
