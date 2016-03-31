@@ -34,8 +34,7 @@
                     android:layout_height="25dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginStart="5dp"
-                    />
-                  <!--  android:src="@drawable/sampleneko" -->
+                    android:src="@drawable/sampleneko" />
 
 
                 <TextView
@@ -61,8 +60,8 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:id="@+id/imageView"
-                    android:contentDescription="posted picture" />
-               <!--     android:src="@drawable/samplepic" -->
+                    android:contentDescription="posted picture"
+                    android:src="@drawable/samplepic" />
 
 
                 <LinearLayout
@@ -76,7 +75,7 @@
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:text="九平次 純米大吟醸"
                         android:id="@+id/textBox"
-                        android:textSize="22sp"
+                        android:textSize="17sp"
                         android:layout_centerVertical="true"
                         android:layout_marginTop="5dp"
                         android:layout_marginStart="5dp" />
