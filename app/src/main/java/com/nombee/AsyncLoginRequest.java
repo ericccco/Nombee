@@ -13,6 +13,9 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
@@ -50,22 +53,27 @@ public class AsyncLoginRequest extends AsyncTask<Void, Void, String> {
     @Override
     protected String doInBackground(Void... params){
         String result = null;
-        //String postStr = "content=" + email;
-        String postStr = "content=hogehoge";
-        Log.i("hoge",postStr);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"),postStr);
+        //Creating JSON Object
+        JSONObject userInfo = new JSONObject();
+        try {
+            userInfo.put("username", this.email);
+            userInfo.put("pass", this.pass);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.i("json","errer");
+            return null;
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), userInfo.toString());
         Request request = new Request.Builder().url(SERVER_URL+SERVER_APP).post(requestBody).build();
 
-        // クライアントオブジェクトを作って
         OkHttpClient client = new OkHttpClient();
-        //client.networkInterceptors().add(new StethoInterceptor());
 
-        // リクエストして結果を受け取って
         try {
             Response response = client.newCall(request).execute();
-            java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
-            java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
+            //java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
+            //java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
             result = response.body().string();
             Log.i("hoge","doPost success" + result);
         } catch (IOException e) {

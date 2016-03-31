@@ -33,6 +33,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -79,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private AsyncLoginRequest loginTask = null;
+    private UserLoginTask loginTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -251,7 +260,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            loginTask = new AsyncLoginRequest(this, email, password);
+            loginTask = new UserLoginTask(email, password);
             loginTask.execute((Void) null);
         }
     }
@@ -372,23 +381,33 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+            String result = null;
+
+            //Creating JSON Object
+            JSONObject userInfo = new JSONObject();
+            try {
+                userInfo.put("username", this.mEmail);
+                userInfo.put("pass", this.mPassword);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.i("json","errer");
+                return null;
+            }
+
+            RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), userInfo.toString());
+            Request request = new Request.Builder().url(SERVER_URL+SERVER_APP).post(requestBody).build();
+
+            OkHttpClient client = new OkHttpClient();
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                Response response = client.newCall(request).execute();
+                //java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
+                //java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
+                result = response.body().string();
+                Log.i("login","doPost success " + result);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-/*
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-            */
 
             // TODO: register the new account here.
             return true;
