@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -77,9 +79,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Server URL, App Name
      */
-    //private static final String SERVER_URL = "http://nombee-app.appspot.com/";
-    private static final String SERVER_URL = "http://1-dot-erikotestserver2.appspot.com/";
-    private static final String SERVER_APP = "testservletapp";
+    private static final String SERVER_URL = "https://nombee-app.appspot.com/";
+    private static final String SERVER_APP = "login";
+    //private static final String SERVER_URL = "http://1-dot-erikotestserver2.appspot.com/";
+    //private static final String SERVER_APP = "testservletapp";
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -99,6 +102,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
     private View fbLoginView;
+
+    // Shared Preference
+    SharedPreferences sharedPreferences;
 
     //CallbackManager callbackManager;
 
@@ -136,6 +142,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
 
         Object[] arg = new String[]{SERVER_APP, SERVER_URL, "eriko"};
+        sharedPreferences = getSharedPreferences("TokenSave", Context.MODE_PRIVATE);
+
         //atask.execute(arg);
 
         // start Facebook Login
@@ -428,6 +436,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         response.append(inputLine);
                         Log.i("res",inputLine);
                     }
+                    //Save Token in SharedPreference
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("Token", 111);
+                    editor.apply();
                     Log.i("hoge","doPost success:" + response.toString());
                 }
             }catch (IOException e){
