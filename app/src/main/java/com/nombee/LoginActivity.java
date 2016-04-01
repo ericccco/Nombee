@@ -85,6 +85,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     //private static final String SERVER_APP = "testservletapp";
 
     /**
+     * Static Strings
+     */
+    private static final String LOGIN_SUCCESS = "success";
+
+    /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
@@ -436,14 +441,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         response.append(inputLine);
                         Log.i("res",inputLine);
                     }
-                    //Save Token in SharedPreference
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putInt("Token", 111);
-                    editor.apply();
-                    Log.i("hoge","doPost success:" + response.toString());
+
+                    //Create JSON Object from response data
+                    JSONObject resJson = new JSONObject(response.toString());
+                    String loginResult = resJson.getString("result");
+                    Log.i("hoge", "login result: " + loginResult);
+
+                    if (loginResult.equals(LOGIN_SUCCESS)) {
+                        String authToken = resJson.getString("auth_token");
+                        int expire = resJson.getInt("expire");
+
+                        //Save Token in SharedPreference
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("auth_token", authToken);
+                        editor.apply();
+                        Log.i("hoge", "login success:" + authToken);
+                        return true;
+                    } else {
+                        Log.i("hoge", "login failed");
+                        return false;
+                    }
                 }
             }catch (IOException e){
                 Log.e("hoge","error orz:" + e.getMessage(), e);
+            } catch (JSONException je) {
+                Log.e("hoge", "JSON error: " + je.getMessage(), je);
             }finally {
                 if(conn != null){
                     conn.disconnect();
