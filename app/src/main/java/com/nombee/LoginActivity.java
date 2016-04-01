@@ -43,9 +43,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -382,31 +385,57 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             String result = null;
+            String userInfoStr = null;
 
             //Creating JSON Object
             JSONObject userInfo = new JSONObject();
             try {
                 userInfo.put("username", this.mEmail);
                 userInfo.put("pass", this.mPassword);
+                userInfoStr = userInfo.toString();
             } catch (JSONException e) {
                 e.printStackTrace();
                 Log.i("json","errer");
                 return null;
             }
 
-            RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), userInfo.toString());
-            Request request = new Request.Builder().url(SERVER_URL+SERVER_APP).post(requestBody).build();
+            //Send user info via https
+            HttpURLConnection conn = null;
+            try{
+                conn = (HttpURLConnection)new URL(SERVER_URL+SERVER_APP).openConnection();
+                conn.setRequestMethod("POST");
+                //conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setFixedLengthStreamingMode(userInfoStr.getBytes().length);
+                conn.setRequestProperty("Content-Type","application/text; charset=UTF-8");
+                Log.i("hoge","doPost start.:" + conn.toString());
 
-            OkHttpClient client = new OkHttpClient();
+                conn.connect();
 
-            try {
-                Response response = client.newCall(request).execute();
-                //java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
-                //java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
-                result = response.body().string();
-                Log.i("login","doPost success " + result);
-            } catch (IOException e) {
-                e.printStackTrace();
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(userInfoStr);
+                writer.flush();
+                writer.close();
+                os.close();
+
+                if(conn.getResponseCode() == HttpURLConnection.HTTP_OK){
+                    StringBuffer response = new StringBuffer();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    String inputLine;
+                    while((inputLine = reader.readLine()) != null){
+                        response.append(inputLine);
+                        Log.i("res",inputLine);
+                    }
+                    Log.i("hoge","doPost success:" + response.toString());
+                }
+            }catch (IOException e){
+                Log.e("hoge","error orz:" + e.getMessage(), e);
+            }finally {
+                if(conn != null){
+                    conn.disconnect();
+                }
             }
 
             // TODO: register the new account here.
