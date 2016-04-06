@@ -1,6 +1,5 @@
 package com.nombee;
 
-import android.app.Activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -33,20 +32,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -79,10 +70,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Server URL, App Name
      */
-    private static final String SERVER_URL = "https://nombee-app.appspot.com/";
-    private static final String SERVER_APP = "login";
+    //private static final String SERVER_URL = "https://nombee-app.appspot.com/";
+    //private static final String SERVER_LOGIN = "login";
     //private static final String SERVER_URL = "http://1-dot-erikotestserver2.appspot.com/";
-    //private static final String SERVER_APP = "testservletapp";
+    //private static final String SERVER_LOGIN = "testservletapp";
 
     /**
      * Static Strings
@@ -146,7 +137,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        Object[] arg = new String[]{SERVER_APP, SERVER_URL, "eriko"};
         sharedPreferences = getSharedPreferences("TokenSave", Context.MODE_PRIVATE);
 
         //atask.execute(arg);
@@ -415,7 +405,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //Send user info via https
             HttpURLConnection conn = null;
             try{
-                conn = (HttpURLConnection)new URL(SERVER_URL+SERVER_APP).openConnection();
+                conn = (HttpURLConnection)new URL(Constants.SERVER_URL+ Constants.LOGIN_URL).openConnection();
                 conn.setRequestMethod("POST");
                 //conn.setDoInput(true);
                 conn.setDoOutput(true);
@@ -484,6 +474,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (success) {
                 Intent intent = new Intent();
                 intent.setClassName("com.nombee", "com.nombee.TopActivity");
+                //intent.setClassName("com.nombee", "com.nombee.TestActivity");
                 startActivity(intent);
                 //finish();
             } else {

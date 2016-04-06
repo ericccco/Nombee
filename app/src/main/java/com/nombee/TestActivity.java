@@ -1,35 +1,26 @@
 package com.nombee;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class TopActivity extends AppCompatActivity {
+public class TestActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_top);
-        //LinearLayout cardLinear = (LinearLayout) this.findViewById(R.id.cardLinear);
-        //cardLinear.removeAllViews();
+        setContentView(R.layout.activity_test);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -42,7 +33,7 @@ public class TopActivity extends AppCompatActivity {
             }
         });
 
-        mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
+        mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view2);
 
         // won't change size
         mRecyclerView.setHasFixedSize(true);
@@ -54,39 +45,12 @@ public class TopActivity extends AppCompatActivity {
         // specify an adapter
         // セットするデータの数だけカードが作られる
         String[] myDataset = {"a","b","c","d"};
-        mAdapter = new TopActivity.MyAdapter(myDataset);
+        mAdapter = new MyAdapter2(myDataset);
         mRecyclerView.setAdapter(mAdapter);
-        int viewHeight = 1850 * myDataset.length;
-        mRecyclerView.getLayoutParams().height = viewHeight;
-        /*
-        for (int i = 0; i < 5; i++) {
-            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-            LinearLayout linearLayout = (LinearLayout) inflater.inflate(R.layout.post_card, null);
-            CardView cardView = (CardView) linearLayout.findViewById(R.id.cardView);
-            //cardView.setLayoutParams(new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,CardView.LayoutParams.WRAP_CONTENT));
-            //cardView.setLayoutParams(new LinearLayout.LayoutParams(CardView.LayoutParams.MATCH_PARENT,CardView.LayoutParams.WRAP_CONTENT));
-            //CardView.LayoutParams layoutParams = (CardView.LayoutParams)cardView.getLayoutParams();
-            //CardView.LayoutParams layoutParams = (CardView.LayoutParams) cardView.getLayoutParams();
-            //layoutParams.height = 300;
-
-            cardView.setTag(i);
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(TopActivity.this, String.valueOf(v.getTag()) + "番目のCardViewがClickされました", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent();
-                    intent.setClassName("com.nombee", "com.nombee.TestActivity");
-                    startActivity(intent);
-                }
-            });
-            cardLinear.addView(linearLayout, i);
-        }
-        */
-
 
     }
 
-    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
+    public class MyAdapter2 extends RecyclerView.Adapter<MyAdapter2.ViewHolder>{
         private String[] mDataset;
 
         public class ViewHolder extends RecyclerView.ViewHolder{
@@ -99,12 +63,12 @@ public class TopActivity extends AppCompatActivity {
             }
         }
 
-        public MyAdapter(String[] myDataset){
+        public MyAdapter2(String[] myDataset){
             mDataset = myDataset;
         }
 
         @Override
-        public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        public MyAdapter2.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
 
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.post_card, parent, false);
