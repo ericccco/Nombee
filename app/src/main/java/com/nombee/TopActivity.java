@@ -56,7 +56,7 @@ public class TopActivity extends AppCompatActivity {
         String[] myDataset = {"a","b","c","d"};
         mAdapter = new TopActivity.MyAdapter(myDataset);
         mRecyclerView.setAdapter(mAdapter);
-        int viewHeight = 1850 * myDataset.length;
+        int viewHeight = 800 * myDataset.length;
         mRecyclerView.getLayoutParams().height = viewHeight;
         /*
         for (int i = 0; i < 5; i++) {
@@ -90,12 +90,17 @@ public class TopActivity extends AppCompatActivity {
         private String[] mDataset;
 
         public class ViewHolder extends RecyclerView.ViewHolder{
-            //public CardView mCardView;
+            public CardView mCardView;
             public TextView vName;
+            public TextView vSakeName;
+            public TextView vComment;
+
             public ViewHolder(View v){
                 super(v);
-                //mCardView = (CardView)v;
+                mCardView = (CardView)v.findViewById(R.id.cardView);
                 vName = (TextView) v.findViewById(R.id.username);
+                vComment = (TextView) v.findViewById(R.id.comment);
+                vSakeName = (TextView) v.findViewById(R.id.sakename);
             }
         }
 
@@ -116,10 +121,18 @@ public class TopActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position){
+        public void onBindViewHolder(final ViewHolder holder, int position){
             // get element from my dataset at this position
             // replace the contents of the view with that element
             holder.vName.setText("hanako-san");
+
+            holder.mCardView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    //on Click
+                    Toast.makeText(TopActivity.this, String.valueOf(holder.getAdapterPosition()) + "番目のCardViewがClickされました", Toast.LENGTH_SHORT).show();
+                }
+            });
 
         }
 

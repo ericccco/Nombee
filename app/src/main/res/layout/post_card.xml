@@ -9,11 +9,14 @@
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        card_view:cardCornerRadius="4dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
+        android:elevation="15dp"
+        card_view:cardCornerRadius="4dp"
         android:id="@+id/cardView">
+        <!-- android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        card_view:cardElevation="10dp"-->
+
 
         <!-- カードに載せる情報 -->
 
@@ -93,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:text="酸味と米の旨味をしっかりと感じることのできる味わいです。ボリューム感のある旨味ながらも飲み飽きせず、ずっと飲んでいられる1本です。"
-                        android:id="@+id/sakename"
+                        android:id="@+id/comment"
                         android:textSize="15sp"
                         android:layout_margin="8dp" />
 
