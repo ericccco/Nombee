@@ -133,6 +133,8 @@ public class TopActivity extends AppCompatActivity {
                     //holder.mCardView.setElevation(500);
                     //holder.mCardView.setCardElevation(700);
                     //holder.mCardView.setTranslationZ(700);
+
+                    //Expand height
                     ViewGroup.LayoutParams layoutParams = holder.mCardView.getLayoutParams();
                     layoutParams.height = 1200;
                     layoutParams.width = CardView.LayoutParams.WRAP_CONTENT;
