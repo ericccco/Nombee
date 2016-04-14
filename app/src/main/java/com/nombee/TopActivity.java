@@ -130,6 +130,13 @@ public class TopActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v){
                     //on Click
+                    //holder.mCardView.setElevation(500);
+                    //holder.mCardView.setCardElevation(700);
+                    //holder.mCardView.setTranslationZ(700);
+                    ViewGroup.LayoutParams layoutParams = holder.mCardView.getLayoutParams();
+                    layoutParams.height = 1200;
+                    layoutParams.width = CardView.LayoutParams.WRAP_CONTENT;
+                    holder.mCardView.setLayoutParams(layoutParams);
                     Toast.makeText(TopActivity.this, String.valueOf(holder.getAdapterPosition()) + "番目のCardViewがClickされました", Toast.LENGTH_SHORT).show();
                 }
             });

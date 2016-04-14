@@ -398,7 +398,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 userInfoStr = userInfo.toString();
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.i("json","errer");
+                Log.i("json", "error");
                 return null;
             }
 
