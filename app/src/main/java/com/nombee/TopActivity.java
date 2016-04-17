@@ -1,6 +1,9 @@
 package com.nombee;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -126,6 +130,21 @@ public class TopActivity extends AppCompatActivity {
             // replace the contents of the view with that element
             holder.vName.setText("hanako-san");
 
+            // 画像の処理
+            Bitmap _bm = BitmapFactory.decodeResource(getResources(), R.drawable.samplepic);
+
+            int cardW = holder.mCardView.getWidth();
+            int w = _bm.getWidth();
+            int h = _bm.getHeight();
+            float scale = Math.min((float) cardW / w, (float) 300 / h);
+            Matrix matrix = new Matrix();
+            matrix.postScale(scale, scale);
+            int size = Math.min(w, h);
+            ((ImageView) findViewById(R.id.sakeImage)).setImageBitmap(Bitmap
+                    .createBitmap(_bm, 0, 0, size, size, matrix, true));
+            _bm.recycle();
+            _bm = null;
+
             holder.mCardView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v){
@@ -136,8 +155,9 @@ public class TopActivity extends AppCompatActivity {
 
                     //Expand height
                     ViewGroup.LayoutParams layoutParams = holder.mCardView.getLayoutParams();
-                    layoutParams.height = 1200;
-                    layoutParams.width = CardView.LayoutParams.WRAP_CONTENT;
+                    //layoutParams.height = 1200;
+                    layoutParams.height = CardView.LayoutParams.WRAP_CONTENT;
+                    layoutParams.width = CardView.LayoutParams.MATCH_PARENT;
                     holder.mCardView.setLayoutParams(layoutParams);
                     Toast.makeText(TopActivity.this, String.valueOf(holder.getAdapterPosition()) + "番目のCardViewがClickされました", Toast.LENGTH_SHORT).show();
                 }
