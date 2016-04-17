@@ -55,6 +55,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
  **/
+
+import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
@@ -78,19 +80,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Static Strings
      */
-    private static final String LOGIN_SUCCESS = "success";
+    private static final String REQUEST_SUCCESS = "success";
 
     /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    //private static final String[] DUMMY_CREDENTIALS = new String[]{
-    //        "foo@example.com:hello", "bar@example.com:world"
-    //};
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
+     * Keep track of the http request tasks to ensure we can cancel it if requested.
      */
     private UserLoginTask loginTask = null;
+    private GetUserInfoTask getUserInfoTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -102,13 +98,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // Shared Preference
     SharedPreferences sharedPreferences;
 
-    //CallbackManager callbackManager;
+    //Globals
+    Globals globals;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+
+        //Get globals
+        globals = (Globals)this.getApplication();
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -437,7 +437,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     String loginResult = resJson.getString("result");
                     Log.i("hoge", "login result: " + loginResult);
 
-                    if (loginResult.equals(LOGIN_SUCCESS)) {
+                    if (loginResult.equals(REQUEST_SUCCESS)) {
                         String authToken = resJson.getString("auth_token");
                         int expire = resJson.getInt("expire");
 
@@ -472,10 +472,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                Intent intent = new Intent();
-                intent.setClassName("com.nombee", "com.nombee.TopActivity");
+                //Get User Info
+                getUserInfoTask = new GetUserInfoTask();
+                getUserInfoTask.execute((Void) null);
+
+                //Intent intent = new Intent();
+                //intent.setClassName("com.nombee", "com.nombee.TopActivity");
                 //intent.setClassName("com.nombee", "com.nombee.TestActivity");
-                startActivity(intent);
+                //startActivity(intent);
                 //finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -486,6 +490,99 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected void onCancelled() {
             loginTask = null;
+            showProgress(false);
+        }
+
+    }
+
+    /**
+     * AsyncTask for HTTP Request to get user info
+     */
+    public class GetUserInfoTask extends AsyncTask<Void, Void, Boolean> {
+        private final String authToken;
+
+
+        GetUserInfoTask(){
+
+            SharedPreferences data = getSharedPreferences("TokenSave", Context.MODE_PRIVATE);
+            this.authToken = data.getString("auth_token","n/a");
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            //Send user info via https
+            HttpURLConnection conn = null;
+            try{
+                conn = (HttpURLConnection)new URL(Constants.SERVER_URL+ Constants.USER_URL).openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Content-Type","application/text; charset=UTF-8");
+                conn.setRequestProperty("Authorization","NombeeToken:" + authToken);
+                Log.i("hoge","User Info Requested:" + conn.toString());
+                conn.connect();
+
+                if(conn.getResponseCode() == HttpURLConnection.HTTP_OK){
+                    StringBuffer response = new StringBuffer();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    String inputLine;
+                    while((inputLine = reader.readLine()) != null){
+                        response.append(inputLine);
+                        Log.i("res",inputLine);
+                    }
+
+                    //Create JSON Object from response data
+                    JSONObject resJson = new JSONObject(response.toString());
+                    String requestResult = resJson.getString("result");
+                    Log.i("hoge", "User Info Request Result: " + requestResult);
+
+                    if (requestResult.equals(REQUEST_SUCCESS)) {
+                        globals.userName = resJson.getString("userName");
+                        String birthDate[] = resJson.getString("birthDate").split("/");
+                        globals.birthYear = Integer.parseInt(birthDate[0]);
+                        globals.birthMonth = Integer.parseInt(birthDate[1]);
+                        globals.birthDay = Integer.parseInt(birthDate[2]);
+
+                        Log.i("hoge", "user info success:" + globals.userName);
+                        return true;
+                    } else {
+                        Log.i("hoge", "user info failed");
+                        return false;
+                    }
+                }
+            }catch(IOException e){
+                Log.e("hoge","error orz:" + e.getMessage(), e);
+            } catch (JSONException je) {
+                Log.e("hoge", "JSON error: " + je.getMessage(), je);
+            }finally {
+                if(conn != null){
+                    conn.disconnect();
+                }
+            }
+
+            return null;
+        }
+
+
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            getUserInfoTask = null;
+            showProgress(false);
+
+            if (success) {
+                //Open Top Activity
+                Intent intent = new Intent();
+                intent.setClassName("com.nombee", "com.nombee.TopActivity");
+                //intent.setClassName("com.nombee", "com.nombee.TestActivity");
+                startActivity(intent);
+            } else {
+                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.requestFocus();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            getUserInfoTask = null;
             showProgress(false);
         }
     }
