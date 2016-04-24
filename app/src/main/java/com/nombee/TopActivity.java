@@ -1,7 +1,6 @@
 package com.nombee;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -19,20 +18,24 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TopActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private int viewHeight = 0;
+
+    // Test用
+    //private String[] myDataset = {"a","b","c","d"};
+    private List<String> myDataset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +58,7 @@ public class TopActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
 
         // won't change size
-        mRecyclerView.setHasFixedSize(true);
+        //mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
@@ -63,44 +66,36 @@ public class TopActivity extends AppCompatActivity {
 
         // specify an adapter
         // セットするデータの数だけカードが作られる
-        String[] myDataset = {"a","b","c","d"};
+        myDataset = new ArrayList<String>();
+        myDataset.add("a");
+        myDataset.add("b");
+        myDataset.add("c");
+        myDataset.add("e");
         mAdapter = new TopActivity.MyAdapter(myDataset);
         mRecyclerView.setAdapter(mAdapter);
-        int viewHeight = 800 * myDataset.length;
-        mRecyclerView.getLayoutParams().height = viewHeight;
+        //viewHeight = 1200 * myDataset.size();
+        //mRecyclerView.getLayoutParams().height = viewHeight;
 
-        /*
-        for (int i = 0; i < 5; i++) {
-            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-            LinearLayout linearLayout = (LinearLayout) inflater.inflate(R.layout.post_card, null);
-            CardView cardView = (CardView) linearLayout.findViewById(R.id.cardView);
-            //cardView.setLayoutParams(new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,CardView.LayoutParams.WRAP_CONTENT));
-            //cardView.setLayoutParams(new LinearLayout.LayoutParams(CardView.LayoutParams.MATCH_PARENT,CardView.LayoutParams.WRAP_CONTENT));
-            //CardView.LayoutParams layoutParams = (CardView.LayoutParams)cardView.getLayoutParams();
-            //CardView.LayoutParams layoutParams = (CardView.LayoutParams) cardView.getLayoutParams();
-            //layoutParams.height = 300;
+        // set Scroll Listner
+        mRecyclerView.addOnScrollListener(new EndlessScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager()) {
+            @Override
+            public void onLoadMore(int current_page) {
+                //Load
+                myDataset.add("e");
+                myDataset.add("f");
+                myDataset.add("g");
+                myDataset.add("h");
+                //viewHeight = 1200 * myDataset.size();
+                //mRecyclerView.getLayoutParams().height = viewHeight;
+            }
+        });
 
-            cardView.setTag(i);
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(TopActivity.this, String.valueOf(v.getTag()) + "番目のCardViewがClickされました", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent();
-                    intent.setClassName("com.nombee", "com.nombee.TestActivity");
-                    startActivity(intent);
-                }
-            });
-            cardLinear.addView(linearLayout, i);
-        }
-        */
 
 
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
-        private String[] mDataset;
-        int viewWidth = 0;
-        int viewHeight = 0;
+        private List<String> mDataset;
         View v;
         Bitmap _bm = null;
 
@@ -121,7 +116,7 @@ public class TopActivity extends AppCompatActivity {
             }
         }
 
-        public MyAdapter(String[] myDataset){
+        public MyAdapter(List<String> myDataset) {
             mDataset = myDataset;
         }
 
@@ -181,9 +176,15 @@ public class TopActivity extends AppCompatActivity {
         // セットされたデータの数を数え、作るべきカードの枚数を決める
         @Override
         public int getItemCount(){
-            return mDataset.length;
+            return mDataset.size();
         }
 
+        /**
+         * get Display Size
+         *
+         * @param context
+         * @return int displayWidth
+         */
         public int getDisplaySize(Context context) {
             int displayWidth = 0;
 
@@ -207,3 +208,4 @@ public class TopActivity extends AppCompatActivity {
         }
     }
 }
+
