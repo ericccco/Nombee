@@ -1,9 +1,11 @@
 package com.nombee;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,9 +14,13 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -62,6 +68,7 @@ public class TopActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
         int viewHeight = 800 * myDataset.length;
         mRecyclerView.getLayoutParams().height = viewHeight;
+
         /*
         for (int i = 0; i < 5; i++) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -92,12 +99,17 @@ public class TopActivity extends AppCompatActivity {
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
         private String[] mDataset;
+        int viewWidth = 0;
+        int viewHeight = 0;
+        View v;
+        Bitmap _bm = null;
 
         public class ViewHolder extends RecyclerView.ViewHolder{
             public CardView mCardView;
             public TextView vName;
             public TextView vSakeName;
             public TextView vComment;
+            public ImageView vSakeImage;
 
             public ViewHolder(View v){
                 super(v);
@@ -105,6 +117,7 @@ public class TopActivity extends AppCompatActivity {
                 vName = (TextView) v.findViewById(R.id.username);
                 vComment = (TextView) v.findViewById(R.id.comment);
                 vSakeName = (TextView) v.findViewById(R.id.sakename);
+                vSakeImage = (ImageView) v.findViewById(R.id.sakeImage);
             }
         }
 
@@ -115,10 +128,11 @@ public class TopActivity extends AppCompatActivity {
         @Override
         public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
 
-            View v = LayoutInflater.from(parent.getContext())
+            v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.post_card, parent, false);
 
             // set the view's size, margins, paddings and layout parameters here
+
 
             ViewHolder vh = new ViewHolder(v);
             return vh;
@@ -128,20 +142,19 @@ public class TopActivity extends AppCompatActivity {
         public void onBindViewHolder(final ViewHolder holder, int position){
             // get element from my dataset at this position
             // replace the contents of the view with that element
-            holder.vName.setText("hanako-san");
+            holder.vName.setText("hanako-san : " + position);
 
+            int displayWidth = getDisplaySize(getApplicationContext());
             // 画像の処理
-            Bitmap _bm = BitmapFactory.decodeResource(getResources(), R.drawable.samplepic);
-
-            int cardW = holder.mCardView.getWidth();
+            _bm = BitmapFactory.decodeResource(getResources(), R.drawable.kuheiji);
             int w = _bm.getWidth();
             int h = _bm.getHeight();
-            float scale = Math.min((float) cardW / w, (float) 300 / h);
+            float scale = (float) displayWidth / w;
             Matrix matrix = new Matrix();
             matrix.postScale(scale, scale);
-            int size = Math.min(w, h);
-            ((ImageView) findViewById(R.id.sakeImage)).setImageBitmap(Bitmap
-                    .createBitmap(_bm, 0, 0, size, size, matrix, true));
+            //int size = Math.max(w, h);
+            holder.vSakeImage.setImageBitmap(Bitmap
+                    .createBitmap(_bm, 0, 0, w, h, matrix, true));
             _bm.recycle();
             _bm = null;
 
@@ -169,6 +182,28 @@ public class TopActivity extends AppCompatActivity {
         @Override
         public int getItemCount(){
             return mDataset.length;
+        }
+
+        public int getDisplaySize(Context context) {
+            int displayWidth = 0;
+
+            //画面サイズ取得の準備
+            WindowManager wm = (WindowManager) context.getSystemService(WINDOW_SERVICE);
+            Display disp = wm.getDefaultDisplay();
+
+            // AndroidのAPIレベルによって画面サイズ取得方法が異なるので条件分岐
+            if (Integer.valueOf(android.os.Build.VERSION.SDK_INT) < 13) {
+                Log.d("TEST", "12までのが来てる!");
+                displayWidth = disp.getWidth();
+
+            } else {
+                Log.d("TEST", "13以降が来てる!");
+                Point size = new Point();
+                disp.getSize(size);
+                displayWidth = size.x;
+
+            }
+            return displayWidth;
         }
     }
 }

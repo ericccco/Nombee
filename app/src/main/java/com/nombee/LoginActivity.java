@@ -511,6 +511,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             //Send user info via https
+
+            // comment ouf for testing
+            /*
             HttpURLConnection conn = null;
             try{
                 conn = (HttpURLConnection)new URL(Constants.SERVER_URL+ Constants.USER_URL).openConnection();
@@ -559,6 +562,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
 
             return null;
+            */
+            return true;
         }
 
 
