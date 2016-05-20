@@ -43,6 +43,7 @@ public class TopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_top);
         //LinearLayout cardLinear = (LinearLayout) this.findViewById(R.id.cardLinear);
         //cardLinear.removeAllViews();
+        /*
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -54,6 +55,7 @@ public class TopActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        */
 
         mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
 
@@ -80,7 +82,7 @@ public class TopActivity extends AppCompatActivity {
         mRecyclerView.addOnScrollListener(new EndlessScrollListener((LinearLayoutManager) mRecyclerView.getLayoutManager()) {
             @Override
             public void onLoadMore(int current_page) {
-                //Load
+                //ここでデータをロードする
                 myDataset.add("e");
                 myDataset.add("f");
                 myDataset.add("g");
@@ -194,11 +196,11 @@ public class TopActivity extends AppCompatActivity {
 
             // AndroidのAPIレベルによって画面サイズ取得方法が異なるので条件分岐
             if (Integer.valueOf(android.os.Build.VERSION.SDK_INT) < 13) {
-                Log.d("TEST", "12までのが来てる!");
+                //Log.d("TEST", "12までのが来てる!");
                 displayWidth = disp.getWidth();
 
             } else {
-                Log.d("TEST", "13以降が来てる!");
+                //Log.d("TEST", "13以降が来てる!");
                 Point size = new Point();
                 disp.getSize(size);
                 displayWidth = size.x;

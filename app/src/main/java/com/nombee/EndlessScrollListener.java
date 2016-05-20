@@ -2,6 +2,7 @@ package com.nombee;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 /**
  * Created by eriko on 2016/04/24.
@@ -9,7 +10,7 @@ import android.support.v7.widget.RecyclerView;
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
 
     int firstVisibleItem, visibleItemCount, totalItemCount;
-    private int visibleThreshold = 3;
+    private int visibleThreshold = 4;
     private int previousTotal = 0;
     private boolean loading = true;
     private int current_page = 1;
@@ -31,14 +32,17 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         if (loading) {
             if (totalItemCount > previousTotal) {
                 loading = false;
+                Log.d("Scrolled:", "loadingをfalseにした！");
                 previousTotal = totalItemCount;
             }
+        } else {
+            Log.d("Scrolled:", "loadingがfalse " + totalItemCount + " / " + visibleItemCount + " / " + firstVisibleItem + " / " + visibleThreshold);
         }
 
         //if(!loading && (totalItemCount == (firstVisibleItem + visibleItemCount))){
         if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
             current_page++;
-
+            Log.d("Scrolled:", "current_page++ " + current_page);
             onLoadMore(current_page);
 
             loading = true;
