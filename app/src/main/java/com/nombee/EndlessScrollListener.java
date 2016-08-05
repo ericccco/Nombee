@@ -30,19 +30,21 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
 
         if (loading) {
+            //Log.d("Scrolled:", "totalItemCount: "+totalItemCount+ " previouseTotal: "+previousTotal);
             if (totalItemCount > previousTotal) {
                 loading = false;
                 Log.d("Scrolled:", "loadingをfalseにした！");
                 previousTotal = totalItemCount;
             }
         } else {
-            Log.d("Scrolled:", "loadingがfalse " + totalItemCount + " / " + visibleItemCount + " / " + firstVisibleItem + " / " + visibleThreshold);
+            //Log.d("Scrolled:", "loadingがfalse " + totalItemCount + " / " + visibleItemCount + " / " + firstVisibleItem + " / " + visibleThreshold);
         }
 
         //if(!loading && (totalItemCount == (firstVisibleItem + visibleItemCount))){
         if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+            //Log.d("Scrolled:", "loadingがfalse " + totalItemCount + " / " + visibleItemCount + " / " + firstVisibleItem + " / " + visibleThreshold);
             current_page++;
-            Log.d("Scrolled:", "current_page++ " + current_page);
+            //Log.d("Scrolled:", "current_page++ " + current_page);
             onLoadMore(current_page);
 
             loading = true;
